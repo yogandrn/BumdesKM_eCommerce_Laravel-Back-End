@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
-use App\Models\Product;
+use App\Models\Mobile\Cart;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -105,7 +104,7 @@ class CartController extends Controller
             foreach ($carts as $cart) {
                 // $id_cart = $cart->id;
                 // $user_id = $cart->id_user;
-                $id_product = $cart->id_product;
+                $id_product = intval($cart->id_product);
                 // $title = $cart->product->title;
                 // $qty = $cart->qty;
                 // $subtotal = $cart->subtotal;
@@ -116,13 +115,13 @@ class CartController extends Controller
 
                 array_push($response, [
                     'id' => $cart->id,
-                    'id_user' => $cart->id_user,
-                    'id_product'=>$cart->id_product,
+                    'id_user' => intval($cart->id_user),
+                    'id_product'=>intval($cart->id_product),
                     'title' => $title,
                     'image' => $image,
-                    'price' => $price,
-                    'qty' => $cart->qty,
-                    'subtotal' => $cart->qty * $price,
+                    'price' => intval($price),
+                    'qty' => intval($cart->qty),
+                    'subtotal' => intval($cart->qty * $price),
                 ]);
             }
             return response()->json($response, 200);
@@ -142,16 +141,55 @@ class CartController extends Controller
     }
 
     public function AddToCart(Request $request)
-    {
+    {   
+        try {
+        $carts = Cart::select('id_product')->where('id_user', $request->id_user)->get();
+        $product_id = [];
+        foreach($carts as $cart) {
+            $data = $cart->id_product;
+            
+            array_push($product_id, $data);
+        }
+        
         $ValidatedData = $request->validate([
             'id_user' => 'required',
             'id_product' => 'required',
             'qty' => 'required',
             'subtotal' => 'required',
         ]);
+        
+        if (in_array($ValidatedData['id_product'], $product_id)) {
+            $cart = Cart::where('id_user', $request->id_user)->where('id_product', $request->id_product)->first();
+            $id = $cart->id;
+            $qty = intval($cart->qty);
+            $subtotal = intval($cart->subtotal);
+            Cart::where('id' , $id)->update([
+                'qty' => $qty + $ValidatedData['qty'],
+                'subtotal' => $subtotal + $ValidatedData['subtotal'],
+                ]);
+        } else {
 
-        Cart::create($ValidatedData);
-
+            Cart::create($ValidatedData);
+        }
         return response()->json(['message' => 'SUCCESS'], 200);
+        
+        } catch(Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+            
+        }
+    }
+    
+    public function test () {
+         $carts = Cart::select('id_product')->where('id_user', '8')->get();
+        $product_id = [];
+        foreach($carts as $cart) {
+            $data = $cart->id_product;
+            
+            array_push($product_id, $data);
+        }
+        if (in_array("7", $product_id)) {
+            $cart = Cart::where('id_user', "8")->where('id_product', "8")->first();
+        }
+         return response()->json($cart, 200);
     }
 }

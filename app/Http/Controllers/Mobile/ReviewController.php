@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\Review;
+use App\Models\Mobile\Review;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -132,6 +132,26 @@ class ReviewController extends Controller
             }
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function createReview(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'id_transaction' => 'required',
+                'id_user' => 'required',
+                'comment' => 'required',
+            ]);
+            Review::create([
+                'id_transaction' => $request->id_transaction,
+                'id_user' => $request->id_user,
+                'comment' => $request->comment,
+            ]);
+            
+            return response()->json(['message' => 'SUCCESS'], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         }
     }
 

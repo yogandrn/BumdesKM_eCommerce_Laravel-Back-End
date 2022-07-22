@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
+use App\Models\Mobile\Payment;
+use App\Models\Mobile\TransactionOut;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,10 @@ class PaymentController extends Controller
 
             // $validated['id_transaction'] = 1;
             // $validated['status'] = "OK";
-            Payment::create($validated);
+            $create = Payment::create($validated);
+            if ($create) {
+                TransactionOut::where('id', $validated['id_transaction'])->update(['status' => 'WAITING']);
+            }
 
             return response()->json(['message' => 'SUCCESS'], 200);
 

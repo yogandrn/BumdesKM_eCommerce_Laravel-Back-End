@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Mobile;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    use HasFactory;
+    // use HasFactory;
 
     protected $table = 'reviews';
     protected $fillable = ['id_transaction', 'id_user', 'comment'];

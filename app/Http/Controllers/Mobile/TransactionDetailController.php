@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Mobile;
 
 use App\Http\Controllers\Controller;
-use App\Models\DetailTransactionOut;
-use App\Models\Product;
-use App\Models\TransactionDetail;
+use App\Models\Mobile\Product;
+use App\Models\Mobile\TransactionDetail;
 use Illuminate\Http\Request;
 
 class TransactionDetailController extends Controller
@@ -96,15 +95,15 @@ class TransactionDetailController extends Controller
                 $getProduct = Product::where('id', $id_product)->first();
                 $title = $getProduct->title;
                 $image = $getProduct['gallery'][0]['image'];
-                $price = $getProduct->price;
+                $price = intval($getProduct->price);
 
                 array_push($response, [
                     'id' => $item->id,
-                    'id_product' => $id_product,
+                    'id_product' => intval($id_product),
                     'title' => $title,
-                    'price' => $price,
-                    'qty' => $item->qty,
-                    'subtotal' => $item->subtotal,
+                    'price' => intval($price),
+                    'qty' => intval($item->qty),
+                    'subtotal' => intval($item->subtotal),
                     'image' => $image,
                 ]);
             }

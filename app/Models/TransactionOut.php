@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Mobile;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TransactionOut extends Model
 {
-    use HasFactory;
+    // use HasFactory;
 
     protected $table = 'transaction_outs';
 
@@ -20,6 +20,6 @@ class TransactionOut extends Model
 
     public function detail()
     {
-        return $this->hasMany(TransactionDetail::class);
+        return $this->hasMany(TransactionDetail::class, 'id_transaction', 'id');
     }
 }
